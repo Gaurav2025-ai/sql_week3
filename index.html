@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL Week 2: WHERE Clauses & Operators</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            animation: slideDown 1s ease-out;
+        }
+
+        .section {
+            background: white;
+            margin: 20px 0;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        .section:nth-child(2) { animation-delay: 0.2s; }
+        .section:nth-child(3) { animation-delay: 0.4s; }
+        .section:nth-child(4) { animation-delay: 0.6s; }
+        .section:nth-child(5) { animation-delay: 0.8s; }
+
+        .typewriter {
+            overflow: hidden;
+            border-right: 3px solid #667eea;
+            white-space: nowrap;
+            animation: typing 3s steps(40, end), blink-caret 0.75s step-end infinite;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .code-block::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: shine 2s infinite;
+        }
+
+        .highlight {
+            background: #ffd700;
+            padding: 2px 5px;
+            border-radius: 3px;
+            animation: pulse 2s infinite;
+        }
+
+        .exercise {
+            background: #f7fafc;
+            border-left: 5px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .exercise h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            animation: slideIn 1s ease-out;
+        }
+
+        .table th, .table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        .table th {
+            background: #667eea;
+            color: white;
+        }
+
+        .table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            animation: fillProgress 3s ease-out forwards;
+        }
+
+        .btn {
+            background: #667eea;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        @keyframes blink-caret {
+            from, to { border-color: transparent; }
+            50% { border-color: #667eea; }
+        }
+
+        @keyframes shine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes fillProgress {
+            from { width: 0%; }
+            to { width: 100%; }
+        }
+
+        .operator-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .operator-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            transition: transform 0.3s ease;
+        }
+
+        .operator-card:hover {
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 SQL Week 2: WHERE Clauses & Operators</h1>
+            <p class="typewriter">Master the art of filtering data with precision!</p>
+        </div>
+
+        <!-- Recap Section -->
+        <div class="section">
+            <h2>📚 Quick Recap: What We Learned in Week 1</h2>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+            
+            <h3>✅ SELECT * (Select All)</h3>
+            <div class="code-block">
+SELECT * FROM products;
+-- Returns ALL columns from the products table
+            </div>
+            
+            <h3>✅ SELECT Specific Columns</h3>
+            <div class="code-block">
+SELECT name, price FROM products;
+-- Returns only name and price columns
+            </div>
+            
+            <p><strong>Great job!</strong> Now let's learn how to <span class="highlight">filter</span> this data to find exactly what we need.</p>
+        </div>
+
+        <!-- WHERE Clause Introduction -->
+        <div class="section">
+            <h2>🎯 Introducing the WHERE Clause</h2>
+            
+            <p>The <strong>WHERE clause</strong> is like a filter that helps you find specific rows in your table based on conditions.</p>
+            
+            <h3>📝 Basic WHERE Syntax</h3>
+            <div class="code-block">
+SELECT column1, column2 
+FROM table_name 
+WHERE <span class="highlight">condition</span>;
+            </div>
+            
+            <h3>🔍 How WHERE Works</h3>
+            <table class="table">
+                <tr>
+                    <th>Step</th>
+                    <th>What Happens</th>
+                    <th>Example</th>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>SQL looks at each row</td>
+                    <td>Checking row by row...</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Tests the condition</td>
+                    <td>Is price > 500?</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>If TRUE, includes the row</td>
+                    <td>Yes! Include this row</td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>If FALSE, skips the row</td>
+                    <td>No, skip this row</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Operators Section -->
+        <div class="section">
+            <h2>⚡ Comparison Operators</h2>
+            
+            <div class="operator-grid">
+                <div class="operator-card">
+                    <h4>= (Equal)</h4>
+                    <code>price = 100</code>
+                    <p>Finds exact matches</p>
+                </div>
+                <div class="operator-card">
+                    <h4>!= (Not Equal)</h4>
+                    <code>category != 'Phone'</code>
+                    <p>Excludes matches</p>
+                </div>
+                <div class="operator-card">
+                    <h4>> (Greater Than)</h4>
+                    <code>price > 500</code>
+                    <p>Values above threshold</p>
+                </div>
+                <div class="operator-card">
+                    <h4>< (Less Than)</h4>
+                    <code>stock < 10</code>
+                    <p>Values below threshold</p>
+                </div>
+                <div class="operator-card">
+                    <h4>>= (Greater or Equal)</h4>
+                    <code>rating >= 4.5</code>
+                    <p>Values above or equal</p>
+                </div>
+                <div class="operator-card">
+                    <h4><= (Less or Equal)</h4>
+                    <code>year <= 2000</code>
+                    <p>Values below or equal</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sample Data -->
+        <div class="section">
+            <h2>📊 Sample Data: Products Table</h2>
+            <table class="table">
+                <tr>
+                    <th>id</th>
+                    <th>name</th>
+                    <th>price</th>
+                    <th>category</th>
+                    <th>stock</th>
+                    <th>rating</th>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>iPhone 15</td>
+                    <td>999</td>
+                    <td>Phone</td>
+                    <td>50</td>
+                    <td>4.8</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>MacBook Pro</td>
+                    <td>1999</td>
+                    <td>Laptop</td>
+                    <td>20</td>
+                    <td>4.9</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>AirPods</td>
+                    <td>179</td>
+                    <td>Audio</td>
+                    <td>100</td>
+                    <td>4.7</td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>iPad</td>
+                    <td>599</td>
+                    <td>Tablet</td>
+                    <td>60</td>
+                    <td>4.6</td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td>Dell Laptop</td>
+                    <td>899</td>
+                    <td>Laptop</td>
+                    <td>35</td>
+                    <td>4.2</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Exercises -->
+        <div class="section">
+            <h2>🏋️ Practice Exercises</h2>
+            
+            <div class="exercise">
+                <h3>Exercise 1: Basic Filtering</h3>
+                <p><strong>Task:</strong> Find all products in the 'Phone' category</p>
+                <div class="code-block">
+-- Write your query here:
+SELECT * FROM products WHERE _________;
+                </div>
+                <button class="btn" onclick="showAnswer(1)">Show Answer</button>
+                <div id="answer1" style="display:none; margin-top:15px;">
+                    <div class="code-block">
+SELECT * FROM products WHERE category = 'Phone';
+                    </div>
+                </div>
+            </div>
+
+            <div class="exercise">
+                <h3>Exercise 2: Price Filtering</h3>
+                <p><strong>Task:</strong> Find all products priced above $500</p>
+                <div class="code-block">
+-- Write your query here:
+SELECT name, price FROM products WHERE _________;
+                </div>
+                <button class="btn" onclick="showAnswer(2)">Show Answer</button>
+                <div id="answer2" style="display:none; margin-top:15px;">
+                    <div class="code-block">
+SELECT name, price FROM products WHERE price > 500;
+                    </div>
+                </div>
+            </div>
+
+            <div class="exercise">
+                <h3>Exercise 3: Stock Check</h3>
+                <p><strong>Task:</strong> Find products with low stock (less than 30 items)</p>
+                <div class="code-block">
+-- Write your query here:
+SELECT name, stock FROM products WHERE _________;
+                </div>
+                <button class="btn" onclick="showAnswer(3)">Show Answer</button>
+                <div id="answer3" style="display:none; margin-top:15px;">
+                    <div class="code-block">
+SELECT name, stock FROM products WHERE stock < 30;
+                    </div>
+                </div>
+            </div>
+
+            <div class="exercise">
+                <h3>Exercise 4: High-Rated Products</h3>
+                <p><strong>Task:</strong> Find products with rating 4.5 or higher</p>
+                <div class="code-block">
+-- Write your query here:
+SELECT name, rating FROM products WHERE _________;
+                </div>
+                <button class="btn" onclick="showAnswer(4)">Show Answer</button>
+                <div id="answer4" style="display:none; margin-top:15px;">
+                    <div class="code-block">
+SELECT name, rating FROM products WHERE rating >= 4.5;
+                    </div>
+                </div>
+            </div>
+
+            <div class="exercise">
+                <h3>Exercise 5: Exclude Category</h3>
+                <p><strong>Task:</strong> Find all products that are NOT laptops</p>
+                <div class="code-block">
+-- Write your query here:
+SELECT name, category FROM products WHERE _________;
+                </div>
+                <button class="btn" onclick="showAnswer(5)">Show Answer</button>
+                <div id="answer5" style="display:none; margin-top:15px;">
+                    <div class="code-block">
+SELECT name, category FROM products WHERE category != 'Laptop';
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary -->
+        <div class="section">
+            <h2>🎉 Week 2 Summary</h2>
+            <h3>What You've Learned:</h3>
+            <ul style="font-size: 18px; line-height: 2;">
+                <li>✅ How to use WHERE clause to filter data</li>
+                <li>✅ Comparison operators (=, !=, >, <, >=, <=)</li>
+                <li>✅ Writing conditions to find specific rows</li>
+                <li>✅ Combining SELECT with WHERE for precise queries</li>
+            </ul>
+            
+            <div style="text-align: center; margin-top: 30px;">
+                <button class="btn" style="font-size: 18px; padding: 15px 30px;">
+                    🚀 Ready for Week 3: Multiple Conditions!
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showAnswer(exerciseNum) {
+            const answer = document.getElementById('answer' + exerciseNum);
+            if (answer.style.display === 'none') {
+                answer.style.display = 'block';
+                answer.style.animation = 'fadeInUp 0.5s ease-out';
+            } else {
+                answer.style.display = 'none';
+            }
+        }
+
+        // Add some interactive effects
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate sections on scroll
+            const sections = document.querySelectorAll('.section');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            });
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+        });
+    </script>
+</body>
+</html>
