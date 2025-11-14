@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SQL Week 2: WHERE Clauses & Operators</title>
+    <title>SQL Week 3: Multiple Conditions & Sorting</title>
     <style>
         * {
             margin: 0;
@@ -12,61 +12,139 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #333;
+            font-family: 'Amazon Ember', Arial, sans-serif;
+            background: #0f1419;
+            color: #ffffff;
             line-height: 1.6;
         }
 
         .container {
-            max-width: 1200px;
-            margin: 0 auto;
+            max-width: none;
+            width: 100%;
+            margin: 0;
             padding: 20px;
+            display: flex;
+            gap: 20px;
+        }
+
+        .sidebar {
+            width: 250px;
+            position: sticky;
+            top: 20px;
+            height: fit-content;
+        }
+
+        .main-content {
+            flex: 1;
         }
 
         .header {
             text-align: center;
             color: white;
             margin-bottom: 30px;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #232f3e 0%, #131a22 100%);
+            border-radius: 8px;
+            border: 1px solid #3a4553;
         }
 
-        .header h1 {
-            font-size: 3em;
-            margin-bottom: 10px;
-            animation: slideDown 1s ease-out;
+        .org-title {
+            font-size: 2.8em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #ff9900;
+            letter-spacing: 1px;
+        }
+
+        .course-title {
+            font-size: 1.8em;
+            margin: 15px 0;
+            color: #ffffff;
+            font-weight: 400;
+        }
+
+        .tagline {
+            font-size: 1.1em;
+            margin-top: 15px;
+            color: #cccccc;
+            font-weight: 300;
+        }
+
+        .creator-info {
+            background: #232f3e;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #3a4553;
+        }
+
+        .creator-item {
+            background: #131a22;
+            padding: 15px;
+            border-radius: 4px;
+            border: 1px solid #3a4553;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .creator-item strong {
+            color: #ff9900;
+            font-size: 0.9em;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .creator-item .name {
+            color: #ffffff;
+            font-size: 1em;
+            font-weight: 500;
+        }
+
+        .creator-item .handle {
+            color: #888888;
+            font-size: 0.8em;
+            margin-top: 4px;
+        }
+
+        .learning-path {
+            background: #ff9900;
+            color: #131a22;
+            padding: 12px 15px;
+            border-radius: 4px;
+            font-weight: 600;
+            text-align: center;
+            font-size: 0.9em;
         }
 
         .section {
-            background: white;
+            background: #232f3e;
+            border: 1px solid #3a4553;
             margin: 20px 0;
             padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            opacity: 0;
-            animation: fadeInUp 0.8s ease-out forwards;
+            border-radius: 8px;
         }
 
-        .section:nth-child(2) { animation-delay: 0.2s; }
-        .section:nth-child(3) { animation-delay: 0.4s; }
-        .section:nth-child(4) { animation-delay: 0.6s; }
-        .section:nth-child(5) { animation-delay: 0.8s; }
-
-        .typewriter {
-            overflow: hidden;
-            border-right: 3px solid #667eea;
-            white-space: nowrap;
-            animation: typing 3s steps(40, end), blink-caret 0.75s step-end infinite;
+        .section h2 {
+            color: #ff9900;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ff9900;
+            padding-bottom: 10px;
+            font-weight: 600;
         }
 
         .code-block {
-            background: #2d3748;
-            color: #e2e8f0;
-            padding: 20px;
-            border-radius: 8px;
-            margin: 15px 0;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border: 2px solid #00d4ff;
+            color: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 20px 0;
             font-family: 'Courier New', monospace;
+            font-size: 16px;
             position: relative;
             overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 212, 255, 0.3);
+            animation: codeGlow 3s ease-in-out infinite;
         }
 
         .code-block::before {
@@ -76,56 +154,63 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-            animation: shine 2s infinite;
+            background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.4), transparent);
+            animation: slideShine 4s infinite;
+        }
+
+        .code-block::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #00d4ff, #00ff88, #00d4ff);
+            animation: topGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes codeGlow {
+            0%, 100% { 
+                box-shadow: 0 8px 32px rgba(0, 212, 255, 0.3);
+                border-color: #00d4ff;
+            }
+            50% { 
+                box-shadow: 0 12px 48px rgba(0, 212, 255, 0.6), 0 0 20px rgba(0, 255, 136, 0.4);
+                border-color: #00ff88;
+            }
+        }
+
+        @keyframes topGlow {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
         }
 
         .highlight {
-            background: #ffd700;
-            padding: 2px 5px;
-            border-radius: 3px;
-            animation: pulse 2s infinite;
+            background: linear-gradient(135deg, #00ff88, #00d4ff);
+            color: #1a1a2e;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-weight: bold;
+            text-shadow: none;
+            box-shadow: 0 2px 8px rgba(0, 255, 136, 0.4);
+            animation: highlightPulse 2s ease-in-out infinite;
         }
 
-        .exercise {
-            background: #f7fafc;
-            border-left: 5px solid #667eea;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 0 8px 8px 0;
-        }
-
-        .exercise h3 {
-            color: #667eea;
-            margin-bottom: 15px;
-        }
-
-        .table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 15px 0;
-            animation: slideIn 1s ease-out;
-        }
-
-        .table th, .table td {
-            border: 1px solid #ddd;
-            padding: 12px;
-            text-align: left;
-        }
-
-        .table th {
-            background: #667eea;
-            color: white;
-        }
-
-        .table tr:nth-child(even) {
-            background: #f9f9f9;
+        @keyframes highlightPulse {
+            0%, 100% { 
+                box-shadow: 0 2px 8px rgba(0, 255, 136, 0.4);
+                transform: scale(1);
+            }
+            50% { 
+                box-shadow: 0 4px 16px rgba(0, 255, 136, 0.8);
+                transform: scale(1.02);
+            }
         }
 
         .progress-bar {
             width: 100%;
             height: 20px;
-            background: #e2e8f0;
+            background: #e9ecef;
             border-radius: 10px;
             overflow: hidden;
             margin: 20px 0;
@@ -133,60 +218,9 @@
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, #667eea, #764ba2);
-            width: 0%;
-            animation: fillProgress 3s ease-out forwards;
-        }
-
-        .btn {
-            background: #667eea;
-            color: white;
-            padding: 12px 25px;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: all 0.3s ease;
-        }
-
-        .btn:hover {
-            background: #764ba2;
-            transform: translateY(-2px);
-        }
-
-        @keyframes slideDown {
-            from { transform: translateY(-50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        @keyframes fadeInUp {
-            from { transform: translateY(30px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        @keyframes typing {
-            from { width: 0; }
-            to { width: 100%; }
-        }
-
-        @keyframes blink-caret {
-            from, to { border-color: transparent; }
-            50% { border-color: #667eea; }
-        }
-
-        @keyframes shine {
-            0% { left: -100%; }
-            100% { left: 100%; }
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(-20px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+            background: #00b894;
+            width: 100%;
+            animation: fillProgress 2s ease-out;
         }
 
         @keyframes fillProgress {
@@ -194,319 +228,1181 @@
             to { width: 100%; }
         }
 
-        .operator-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
+        .info-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+            color: #856404;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: #131a22;
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid #3a4553;
+        }
+
+        .table th, .table td {
+            border: 1px solid #3a4553;
+            padding: 12px;
+            text-align: left;
+            color: #ffffff;
+        }
+
+        .table th {
+            background: #ff9900;
+            color: #131a22;
+            font-weight: 600;
+        }
+
+        .table tr:nth-child(even) {
+            background: #232f3e;
+        }
+
+        .demo-container {
+            background: #131a22;
+            border: 1px solid #3a4553;
+            border-radius: 8px;
+            padding: 20px;
             margin: 20px 0;
         }
 
-        .operator-card {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            border-left: 4px solid #667eea;
-            transition: transform 0.3s ease;
+        .demo-buttons {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+            flex-wrap: wrap;
         }
 
-        .operator-card:hover {
-            transform: translateY(-5px);
+        .demo-btn {
+            background: #ff9900;
+            color: #131a22;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .demo-btn:hover {
+            background: #ffad33;
+            transform: translateY(-2px);
+        }
+
+        .demo-btn.active {
+            background: #00b894;
+            color: white;
+        }
+
+        .query-display {
+            background: linear-gradient(135deg, #0f1419, #1a1a2e);
+            color: #00ff88;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            margin: 15px 0;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            border: 2px solid #00ff88;
+            box-shadow: 0 8px 32px rgba(0, 255, 136, 0.3);
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+            animation: queryGlow 4s ease-in-out infinite;
+        }
+
+        @keyframes queryGlow {
+            0%, 100% { 
+                box-shadow: 0 8px 32px rgba(0, 255, 136, 0.3);
+                border-color: #00ff88;
+            }
+            50% { 
+                box-shadow: 0 12px 48px rgba(0, 255, 136, 0.6), 0 0 20px rgba(0, 212, 255, 0.4);
+                border-color: #00d4ff;
+            }
+        }
+
+        .result-table {
+            margin-top: 15px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .result-table.show {
+            opacity: 1;
+        }
+
+        .highlight-row {
+            background: rgba(0, 184, 148, 0.2) !important;
+            border: 2px solid #00b894 !important;
+        }
+
+        /* Welcome Screen Styles */
+        .welcome-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #232f3e 0%, #131a22 100%);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .welcome-card {
+            background: linear-gradient(135deg, #ff9900, #ffad33);
+            color: #131a22;
+            padding: 50px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 600px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            animation: slideUp 1s ease-out;
+        }
+
+        .welcome-title {
+            font-size: 3em;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .welcome-quote {
+            font-size: 1.3em;
+            font-style: italic;
+            margin: 30px 0;
+            line-height: 1.6;
+            background: rgba(19, 26, 34, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .name-input {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.9);
+            color: #131a22;
+        }
+
+        .start-btn {
+            background: #131a22;
+            color: #ff9900;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .start-btn:hover {
+            background: #232f3e;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .finish-section {
+            background: linear-gradient(135deg, #00b894, #00a085);
+            color: white;
+            text-align: center;
+            padding: 40px;
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+
+        .finish-btn {
+            background: #ff9900;
+            color: #131a22;
+            padding: 20px 50px;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.5em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .finish-btn:hover {
+            background: #ffad33;
+            transform: scale(1.05);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes confettiFall {
+            0% { transform: translateY(-10px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+
+        @keyframes celebration {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* Live Shining Animations */
+        @keyframes shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 5px rgba(255, 153, 0, 0.3); }
+            50% { box-shadow: 0 0 20px rgba(255, 153, 0, 0.6), 0 0 30px rgba(255, 153, 0, 0.4); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        @keyframes slideShine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        /* Apply shine effects */
+        .org-title {
+            position: relative;
+            overflow: hidden;
+            animation: glow 3s ease-in-out infinite;
+        }
+
+        .org-title::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: slideShine 4s infinite;
+        }
+
+        .learning-path {
+            position: relative;
+            overflow: hidden;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .learning-path::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: slideShine 3s infinite;
+        }
+
+        .demo-btn {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .demo-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+            transition: all 0.5s;
+        }
+
+        .demo-btn:hover::before {
+            animation: slideShine 0.6s;
+        }
+
+        .demo-btn.active {
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        .section {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 153, 0, 0.1), transparent);
+            animation: slideShine 8s infinite;
+        }
+
+        .query-display {
+            position: relative;
+            overflow: hidden;
+            animation: glow 4s ease-in-out infinite;
+        }
+
+        .query-display::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 184, 148, 0.3), transparent);
+            animation: slideShine 5s infinite;
+        }
+
+        .table th {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .table th::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: slideShine 6s infinite;
+        }
+
+        .creator-item {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .creator-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 153, 0, 0.15), transparent);
+            animation: slideShine 7s infinite;
+        }
+
+        .finish-btn {
+            position: relative;
+            overflow: hidden;
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        .finish-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+            animation: slideShine 2s infinite;
+        }
+
+        .highlight-row {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .demo-container {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .demo-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 184, 148, 0.1), transparent);
+            animation: slideShine 10s infinite;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                position: static;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Welcome Screen -->
+    <div class="welcome-overlay" id="welcomeScreen">
+        <div class="welcome-card">
+            <div class="welcome-title">🎉 Welcome to SQL Week 3! 🎉</div>
+            
+            <div class="welcome-quote">
+                "You've made it to Week 3! 🚀<br>
+                You're not just learning SQL anymore—you're becoming a data wizard! ✨<br>
+                Every query you write brings you closer to unlocking the secrets hidden in data."
+            </div>
+            
+            <div style="font-size: 1.1em; margin: 20px 0; font-weight: 600;">
+                Enter your name to begin your advanced SQL journey:
+            </div>
+            
+            <input type="text" class="name-input" id="userName" placeholder="Your Name" maxlength="20">
+            
+            <div>
+                <button class="start-btn" onclick="startLearning()">🚀 Start Learning!</button>
+            </div>
+        </div>
+    </div>
+
     <div class="container">
-        <div class="header">
-            <h1>🔍 SQL Week 2: WHERE Clauses & Operators</h1>
-            <p class="typewriter">Master the art of filtering data with precision!</p>
-        </div>
-
-        <!-- Recap Section -->
-        <div class="section">
-            <h2>📚 Quick Recap: What We Learned in Week 1</h2>
-            <div class="progress-bar">
-                <div class="progress-fill"></div>
-            </div>
-            
-            <h3>✅ SELECT * (Select All)</h3>
-            <div class="code-block">
-SELECT * FROM products;
--- Returns ALL columns from the products table
-            </div>
-            
-            <h3>✅ SELECT Specific Columns</h3>
-            <div class="code-block">
-SELECT name, price FROM products;
--- Returns only name and price columns
-            </div>
-            
-            <p><strong>Great job!</strong> Now let's learn how to <span class="highlight">filter</span> this data to find exactly what we need.</p>
-        </div>
-
-        <!-- WHERE Clause Introduction -->
-        <div class="section">
-            <h2>🎯 Introducing the WHERE Clause</h2>
-            
-            <p>The <strong>WHERE clause</strong> is like a filter that helps you find specific rows in your table based on conditions.</p>
-            
-            <h3>📝 Basic WHERE Syntax</h3>
-            <div class="code-block">
-SELECT column1, column2 
-FROM table_name 
-WHERE <span class="highlight">condition</span>;
-            </div>
-            
-            <h3>🔍 How WHERE Works</h3>
-            <table class="table">
-                <tr>
-                    <th>Step</th>
-                    <th>What Happens</th>
-                    <th>Example</th>
-                </tr>
-                <tr>
-                    <td>1</td>
-                    <td>SQL looks at each row</td>
-                    <td>Checking row by row...</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>Tests the condition</td>
-                    <td>Is price > 500?</td>
-                </tr>
-                <tr>
-                    <td>3</td>
-                    <td>If TRUE, includes the row</td>
-                    <td>Yes! Include this row</td>
-                </tr>
-                <tr>
-                    <td>4</td>
-                    <td>If FALSE, skips the row</td>
-                    <td>No, skip this row</td>
-                </tr>
-            </table>
-        </div>
-
-        <!-- Operators Section -->
-        <div class="section">
-            <h2>⚡ Comparison Operators</h2>
-            
-            <div class="operator-grid">
-                <div class="operator-card">
-                    <h4>= (Equal)</h4>
-                    <code>price = 100</code>
-                    <p>Finds exact matches</p>
+        <div class="sidebar">
+            <div class="creator-info">
+                <div class="creator-item">
+                    <strong>👨💻 Created by</strong>
+                    <div class="name">Gaurav</div>
+                    <div class="handle">(@Rathiga)</div>
                 </div>
-                <div class="operator-card">
-                    <h4>!= (Not Equal)</h4>
-                    <code>category != 'Phone'</code>
-                    <p>Excludes matches</p>
+                <div class="creator-item">
+                    <strong>🎯 Pillar Head</strong>
+                    <div class="name">Ambika</div>
+                    <div class="handle">(@ligerka)</div>
                 </div>
-                <div class="operator-card">
-                    <h4>> (Greater Than)</h4>
-                    <code>price > 500</code>
-                    <p>Values above threshold</p>
-                </div>
-                <div class="operator-card">
-                    <h4>< (Less Than)</h4>
-                    <code>stock < 10</code>
-                    <p>Values below threshold</p>
-                </div>
-                <div class="operator-card">
-                    <h4>>= (Greater or Equal)</h4>
-                    <code>rating >= 4.5</code>
-                    <p>Values above or equal</p>
-                </div>
-                <div class="operator-card">
-                    <h4><= (Less or Equal)</h4>
-                    <code>year <= 2000</code>
-                    <p>Values below or equal</p>
+                <div class="learning-path">
+                    🚀 SQL Fundamentals - Week 3
                 </div>
             </div>
         </div>
 
-        <!-- Sample Data -->
-        <div class="section">
-            <h2>📊 Sample Data: Products Table</h2>
-            <table class="table">
-                <tr>
-                    <th>id</th>
-                    <th>name</th>
-                    <th>price</th>
-                    <th>category</th>
-                    <th>stock</th>
-                    <th>rating</th>
-                </tr>
-                <tr>
-                    <td>1</td>
-                    <td>iPhone 15</td>
-                    <td>999</td>
-                    <td>Phone</td>
-                    <td>50</td>
-                    <td>4.8</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>MacBook Pro</td>
-                    <td>1999</td>
-                    <td>Laptop</td>
-                    <td>20</td>
-                    <td>4.9</td>
-                </tr>
-                <tr>
-                    <td>3</td>
-                    <td>AirPods</td>
-                    <td>179</td>
-                    <td>Audio</td>
-                    <td>100</td>
-                    <td>4.7</td>
-                </tr>
-                <tr>
-                    <td>4</td>
-                    <td>iPad</td>
-                    <td>599</td>
-                    <td>Tablet</td>
-                    <td>60</td>
-                    <td>4.6</td>
-                </tr>
-                <tr>
-                    <td>5</td>
-                    <td>Dell Laptop</td>
-                    <td>899</td>
-                    <td>Laptop</td>
-                    <td>35</td>
-                    <td>4.2</td>
-                </tr>
-            </table>
-        </div>
+        <div class="main-content">
+            <div class="header">
+                <div class="org-title">🏢 HYD SUPPORT OPS</div>
+                <div class="course-title">📚 SQL Week 3: Advanced Filtering & Sorting</div>
+                <div class="tagline">Master multiple conditions, sorting, and result limiting!</div>
+            </div>
 
-        <!-- Exercises -->
-        <div class="section">
-            <h2>🏋️ Practice Exercises</h2>
-            
-            <div class="exercise">
-                <h3>Exercise 1: Basic Filtering</h3>
-                <p><strong>Task:</strong> Find all products in the 'Phone' category</p>
+            <!-- Recap Section -->
+            <div class="section">
+                <h2>🔄 Quick Review: Week 2</h2>
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+                
+                <p><strong>What we mastered:</strong></p>
+                
                 <div class="code-block">
--- Write your query here:
-SELECT * FROM products WHERE _________;
+SELECT * FROM products WHERE price > 500;
+<span class="highlight">-- Filter rows with WHERE clause</span>
                 </div>
-                <button class="btn" onclick="showAnswer(1)">Show Answer</button>
-                <div id="answer1" style="display:none; margin-top:15px;">
-                    <div class="code-block">
+                
+                <div class="code-block">
 SELECT * FROM products WHERE category = 'Phone';
-                    </div>
+<span class="highlight">-- Text values need single quotes</span>
                 </div>
-            </div>
-
-            <div class="exercise">
-                <h3>Exercise 2: Price Filtering</h3>
-                <p><strong>Task:</strong> Find all products priced above $500</p>
+                
                 <div class="code-block">
--- Write your query here:
-SELECT name, price FROM products WHERE _________;
+SELECT * FROM products WHERE rating >= 4.5;
+<span class="highlight">-- Comparison operators: =, >, <, >=, <=, !=</span>
                 </div>
-                <button class="btn" onclick="showAnswer(2)">Show Answer</button>
-                <div id="answer2" style="display:none; margin-top:15px;">
-                    <div class="code-block">
-SELECT name, price FROM products WHERE price > 500;
-                    </div>
+                
+                <div class="info-box">
+                    <strong>This week we'll learn:</strong> How to combine multiple conditions, sort results, and limit output!
                 </div>
             </div>
 
-            <div class="exercise">
-                <h3>Exercise 3: Stock Check</h3>
-                <p><strong>Task:</strong> Find products with low stock (less than 30 items)</p>
+            <!-- Sample Data -->
+            <div class="section">
+                <h2>📊 Our Sample Data</h2>
+                <p>We'll practice with this products table:</p>
+                
+                <table class="table" id="sampleData">
+                    <tr>
+                        <th>id</th>
+                        <th>name</th>
+                        <th>price</th>
+                        <th>category</th>
+                        <th>stock</th>
+                        <th>rating</th>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>iPhone 15</td>
+                        <td>999</td>
+                        <td>Phone</td>
+                        <td>50</td>
+                        <td>4.8</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>MacBook Pro</td>
+                        <td>1999</td>
+                        <td>Laptop</td>
+                        <td>20</td>
+                        <td>4.9</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>AirPods</td>
+                        <td>179</td>
+                        <td>Audio</td>
+                        <td>100</td>
+                        <td>4.7</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>iPad</td>
+                        <td>599</td>
+                        <td>Tablet</td>
+                        <td>60</td>
+                        <td>4.6</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>Dell Laptop</td>
+                        <td>899</td>
+                        <td>Laptop</td>
+                        <td>35</td>
+                        <td>4.2</td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td>Samsung Phone</td>
+                        <td>799</td>
+                        <td>Phone</td>
+                        <td>45</td>
+                        <td>4.5</td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- Multiple Conditions Section -->
+            <div class="section">
+                <h2>🔗 Multiple Conditions with AND/OR</h2>
+                
+                <p>Sometimes you need to filter data with <strong>multiple conditions</strong>:</p>
+                
                 <div class="code-block">
--- Write your query here:
-SELECT name, stock FROM products WHERE _________;
+SELECT * FROM products 
+WHERE price > 500 <span class="highlight">AND</span> category = 'Phone';
+<span class="highlight">-- Both conditions must be TRUE</span>
                 </div>
-                <button class="btn" onclick="showAnswer(3)">Show Answer</button>
-                <div id="answer3" style="display:none; margin-top:15px;">
-                    <div class="code-block">
-SELECT name, stock FROM products WHERE stock < 30;
-                    </div>
-                </div>
-            </div>
-
-            <div class="exercise">
-                <h3>Exercise 4: High-Rated Products</h3>
-                <p><strong>Task:</strong> Find products with rating 4.5 or higher</p>
+                
                 <div class="code-block">
--- Write your query here:
-SELECT name, rating FROM products WHERE _________;
+SELECT * FROM products 
+WHERE category = 'Phone' <span class="highlight">OR</span> category = 'Tablet';
+<span class="highlight">-- Either condition can be TRUE</span>
                 </div>
-                <button class="btn" onclick="showAnswer(4)">Show Answer</button>
-                <div id="answer4" style="display:none; margin-top:15px;">
-                    <div class="code-block">
-SELECT name, rating FROM products WHERE rating >= 4.5;
+
+                <h3>🧠 Understanding AND vs OR</h3>
+                <table class="table">
+                    <tr>
+                        <th>Operator</th>
+                        <th>Logic</th>
+                        <th>Example</th>
+                        <th>Result</th>
+                    </tr>
+                    <tr>
+                        <td><strong>AND</strong></td>
+                        <td>Both must be true</td>
+                        <td>price > 500 AND rating >= 4.5</td>
+                        <td>Expensive AND highly rated</td>
+                    </tr>
+                    <tr>
+                        <td><strong>OR</strong></td>
+                        <td>Either can be true</td>
+                        <td>category = 'Phone' OR category = 'Tablet'</td>
+                        <td>Phones OR tablets</td>
+                    </tr>
+                </table>
+
+                <div class="info-box">
+                    <strong>Pro Tip:</strong> Use parentheses () to group conditions when mixing AND/OR!
+                </div>
+
+                <div class="demo-container">
+                    <h3>🎮 Interactive Demo: AND vs OR</h3>
+                    <p>Click the buttons to see how different conditions filter our data:</p>
+                    
+                    <div class="demo-buttons">
+                        <button class="demo-btn" onclick="showDemo('and1')">price > 500 AND rating >= 4.7</button>
+                        <button class="demo-btn" onclick="showDemo('and2')">category = 'Phone' AND price < 900</button>
+                        <button class="demo-btn" onclick="showDemo('or1')">category = 'Phone' OR category = 'Tablet'</button>
+                        <button class="demo-btn" onclick="showDemo('or2')">price > 1500 OR rating >= 4.8</button>
+                        <button class="demo-btn" onclick="showDemo('reset')">Show All</button>
                     </div>
+                    
+                    <div class="query-display" id="currentQuery">
+                        SELECT * FROM products;
+                    </div>
+                    
+                    <table class="table result-table show" id="resultTable">
+                        <tr>
+                            <th>name</th>
+                            <th>price</th>
+                            <th>category</th>
+                            <th>rating</th>
+                        </tr>
+                        <tr data-id="1">
+                            <td>iPhone 15</td>
+                            <td>999</td>
+                            <td>Phone</td>
+                            <td>4.8</td>
+                        </tr>
+                        <tr data-id="2">
+                            <td>MacBook Pro</td>
+                            <td>1999</td>
+                            <td>Laptop</td>
+                            <td>4.9</td>
+                        </tr>
+                        <tr data-id="3">
+                            <td>AirPods</td>
+                            <td>179</td>
+                            <td>Audio</td>
+                            <td>4.7</td>
+                        </tr>
+                        <tr data-id="4">
+                            <td>iPad</td>
+                            <td>599</td>
+                            <td>Tablet</td>
+                            <td>4.6</td>
+                        </tr>
+                        <tr data-id="5">
+                            <td>Dell Laptop</td>
+                            <td>899</td>
+                            <td>Laptop</td>
+                            <td>4.2</td>
+                        </tr>
+                        <tr data-id="6">
+                            <td>Samsung Phone</td>
+                            <td>799</td>
+                            <td>Phone</td>
+                            <td>4.5</td>
+                        </tr>
+                    </table>
                 </div>
             </div>
 
-            <div class="exercise">
-                <h3>Exercise 5: Exclude Category</h3>
-                <p><strong>Task:</strong> Find all products that are NOT laptops</p>
+            <!-- ORDER BY Section -->
+            <div class="section">
+                <h2>📊 Sorting Results with ORDER BY</h2>
+                
+                <p>Control the <strong>order</strong> of your results:</p>
+                
                 <div class="code-block">
--- Write your query here:
-SELECT name, category FROM products WHERE _________;
+SELECT * FROM products 
+<span class="highlight">ORDER BY price ASC;</span>
+<span class="highlight">-- Sort by price: lowest to highest</span>
                 </div>
-                <button class="btn" onclick="showAnswer(5)">Show Answer</button>
-                <div id="answer5" style="display:none; margin-top:15px;">
-                    <div class="code-block">
-SELECT name, category FROM products WHERE category != 'Laptop';
+                
+                <div class="code-block">
+SELECT * FROM products 
+<span class="highlight">ORDER BY rating DESC;</span>
+<span class="highlight">-- Sort by rating: highest to lowest</span>
+                </div>
+
+                <h3>🔄 ASC vs DESC</h3>
+                <table class="table">
+                    <tr>
+                        <th>Direction</th>
+                        <th>Full Name</th>
+                        <th>Numbers</th>
+                        <th>Text</th>
+                        <th>Dates</th>
+                    </tr>
+                    <tr>
+                        <td><strong>ASC</strong></td>
+                        <td>Ascending</td>
+                        <td>1, 2, 3, 4, 5</td>
+                        <td>A, B, C, D, E</td>
+                        <td>Oldest to Newest</td>
+                    </tr>
+                    <tr>
+                        <td><strong>DESC</strong></td>
+                        <td>Descending</td>
+                        <td>5, 4, 3, 2, 1</td>
+                        <td>Z, Y, X, W, V</td>
+                        <td>Newest to Oldest</td>
+                    </tr>
+                </table>
+
+                <div class="info-box">
+                    <strong>Default:</strong> If you don't specify ASC or DESC, SQL uses ASC (ascending) by default.
+                </div>
+
+                <div class="demo-container">
+                    <h3>🎮 Interactive Demo: ORDER BY</h3>
+                    <p>Click to see how sorting changes the order:</p>
+                    
+                    <div class="demo-buttons">
+                        <button class="demo-btn" onclick="showSort('price-asc')">ORDER BY price ASC</button>
+                        <button class="demo-btn" onclick="showSort('price-desc')">ORDER BY price DESC</button>
+                        <button class="demo-btn" onclick="showSort('rating-desc')">ORDER BY rating DESC</button>
+                        <button class="demo-btn" onclick="showSort('name-asc')">ORDER BY name ASC</button>
+                        <button class="demo-btn" onclick="showSort('original')">Original Order</button>
                     </div>
+                    
+                    <div class="query-display" id="sortQuery">
+                        SELECT * FROM products;
+                    </div>
+                    
+                    <table class="table result-table show" id="sortTable">
+                        <tr>
+                            <th>name</th>
+                            <th>price</th>
+                            <th>category</th>
+                            <th>rating</th>
+                        </tr>
+                        <tbody id="sortTableBody">
+                            <tr>
+                                <td>iPhone 15</td>
+                                <td>999</td>
+                                <td>Phone</td>
+                                <td>4.8</td>
+                            </tr>
+                            <tr>
+                                <td>MacBook Pro</td>
+                                <td>1999</td>
+                                <td>Laptop</td>
+                                <td>4.9</td>
+                            </tr>
+                            <tr>
+                                <td>AirPods</td>
+                                <td>179</td>
+                                <td>Audio</td>
+                                <td>4.7</td>
+                            </tr>
+                            <tr>
+                                <td>iPad</td>
+                                <td>599</td>
+                                <td>Tablet</td>
+                                <td>4.6</td>
+                            </tr>
+                            <tr>
+                                <td>Dell Laptop</td>
+                                <td>899</td>
+                                <td>Laptop</td>
+                                <td>4.2</td>
+                            </tr>
+                            <tr>
+                                <td>Samsung Phone</td>
+                                <td>799</td>
+                                <td>Phone</td>
+                                <td>4.5</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
-        </div>
 
-        <!-- Summary -->
-        <div class="section">
-            <h2>🎉 Week 2 Summary</h2>
-            <h3>What You've Learned:</h3>
-            <ul style="font-size: 18px; line-height: 2;">
-                <li>✅ How to use WHERE clause to filter data</li>
-                <li>✅ Comparison operators (=, !=, >, <, >=, <=)</li>
-                <li>✅ Writing conditions to find specific rows</li>
-                <li>✅ Combining SELECT with WHERE for precise queries</li>
-            </ul>
-            
-            <div style="text-align: center; margin-top: 30px;">
-                <button class="btn" style="font-size: 18px; padding: 15px 30px;">
-                    🚀 Ready for Week 3: Multiple Conditions!
+            <!-- LIMIT Section -->
+            <div class="section">
+                <h2>🎯 Limiting Results with LIMIT</h2>
+                
+                <p>Get only the <strong>top N results</strong>:</p>
+                
+                <div class="code-block">
+SELECT * FROM products 
+ORDER BY price DESC 
+<span class="highlight">LIMIT 3;</span>
+<span class="highlight">-- Get top 3 most expensive products</span>
+                </div>
+                
+                <div class="code-block">
+SELECT * FROM products 
+ORDER BY rating DESC 
+<span class="highlight">LIMIT 5;</span>
+<span class="highlight">-- Get top 5 highest rated products</span>
+                </div>
+
+                <h3>💡 Why Use LIMIT?</h3>
+                <table class="table">
+                    <tr>
+                        <th>Use Case</th>
+                        <th>Example</th>
+                        <th>Business Value</th>
+                    </tr>
+                    <tr>
+                        <td>Top performers</td>
+                        <td>LIMIT 10</td>
+                        <td>Best selling products</td>
+                    </tr>
+                    <tr>
+                        <td>Recent data</td>
+                        <td>ORDER BY date DESC LIMIT 5</td>
+                        <td>Latest orders</td>
+                    </tr>
+                    <tr>
+                        <td>Performance</td>
+                        <td>LIMIT 100</td>
+                        <td>Faster queries on large tables</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="demo-container">
+                <h3>🎮 Interactive Demo: LIMIT</h3>
+                <p>See how LIMIT controls the number of results:</p>
+                
+                <div class="demo-buttons">
+                    <button class="demo-btn" onclick="showLimit('top3-price')">Top 3 by Price</button>
+                    <button class="demo-btn" onclick="showLimit('top2-rating')">Top 2 by Rating</button>
+                    <button class="demo-btn" onclick="showLimit('limit5')">LIMIT 5</button>
+                    <button class="demo-btn" onclick="showLimit('all')">Show All</button>
+                </div>
+                
+                <div class="query-display" id="limitQuery">
+                    SELECT * FROM products;
+                </div>
+                
+                <table class="table result-table show" id="limitTable">
+                    <tr>
+                        <th>name</th>
+                        <th>price</th>
+                        <th>category</th>
+                        <th>rating</th>
+                    </tr>
+                    <tbody id="limitTableBody">
+                        <tr>
+                            <td>iPhone 15</td>
+                            <td>999</td>
+                            <td>Phone</td>
+                            <td>4.8</td>
+                        </tr>
+                        <tr>
+                            <td>MacBook Pro</td>
+                            <td>1999</td>
+                            <td>Laptop</td>
+                            <td>4.9</td>
+                        </tr>
+                        <tr>
+                            <td>AirPods</td>
+                            <td>179</td>
+                            <td>Audio</td>
+                            <td>4.7</td>
+                        </tr>
+                        <tr>
+                            <td>iPad</td>
+                            <td>599</td>
+                            <td>Tablet</td>
+                            <td>4.6</td>
+                        </tr>
+                        <tr>
+                            <td>Dell Laptop</td>
+                            <td>899</td>
+                            <td>Laptop</td>
+                            <td>4.2</td>
+                        </tr>
+                        <tr>
+                            <td>Samsung Phone</td>
+                            <td>799</td>
+                            <td>Phone</td>
+                            <td>4.5</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Finish Section -->
+            <div class="finish-section">
+                <h2 style="font-size: 2em; margin-bottom: 15px;">🎯 Ready to Complete?</h2>
+                <p style="font-size: 1.1em; margin-bottom: 20px;">
+                    You've mastered AND/OR, ORDER BY, and LIMIT! 
+                </p>
+                <button class="finish-btn" onclick="celebrateCompletion()">
+                    🎉 Complete Week 3 & Celebrate! 🎉
                 </button>
             </div>
         </div>
     </div>
 
     <script>
-        function showAnswer(exerciseNum) {
-            const answer = document.getElementById('answer' + exerciseNum);
-            if (answer.style.display === 'none') {
-                answer.style.display = 'block';
-                answer.style.animation = 'fadeInUp 0.5s ease-out';
-            } else {
-                answer.style.display = 'none';
+        let studentName = '';
+        
+        // Welcome Screen Functions
+        function startLearning() {
+            const nameInput = document.getElementById('userName');
+            studentName = nameInput.value.trim();
+            
+            if (!studentName) {
+                alert('Please enter your name to continue! 😊');
+                return;
+            }
+            
+            // Hide welcome screen with animation
+            const welcomeScreen = document.getElementById('welcomeScreen');
+            welcomeScreen.style.animation = 'fadeOut 0.5s ease-out forwards';
+            
+            setTimeout(() => {
+                welcomeScreen.style.display = 'none';
+            }, 500);
+        }
+        
+        // Add fadeOut animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeOut {
+                from { opacity: 1; }
+                to { opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Celebration Function
+        function celebrateCompletion() {
+            // Create celebration overlay
+            const celebrationDiv = document.createElement('div');
+            celebrationDiv.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(135deg, rgba(255, 153, 0, 0.9), rgba(0, 184, 148, 0.9));
+                z-index: 10001;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                animation: fadeIn 0.5s ease-out;
+            `;
+            
+            celebrationDiv.innerHTML = `
+                <div style="
+                    background: white;
+                    color: #131a22;
+                    padding: 60px;
+                    border-radius: 25px;
+                    text-align: center;
+                    max-width: 700px;
+                    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3);
+                    animation: celebration 2s ease-in-out infinite;
+                ">
+                    <div style="font-size: 4em; margin-bottom: 20px;">🎊🏆🎊</div>
+                    <h1 style="font-size: 2.5em; color: #ff9900; margin-bottom: 20px;">
+                        Amazing Work, ${studentName}! 
+                    </h1>
+                    <div style="font-size: 1.4em; margin: 30px 0; line-height: 1.6;">
+                        🌟 You've conquered SQL Week 3! 🌟<br>
+                        <strong>You can now:</strong><br>
+                        ✅ Combine multiple conditions with AND/OR<br>
+                        ✅ Sort data perfectly with ORDER BY<br>
+                        ✅ Control results with LIMIT<br>
+                        ✅ Build complex, powerful queries!
+                    </div>
+                    <div style="
+                        background: linear-gradient(135deg, #ff9900, #ffad33);
+                        color: white;
+                        padding: 20px;
+                        border-radius: 15px;
+                        margin: 30px 0;
+                        font-size: 1.2em;
+                        font-weight: 600;
+                    ">
+                        🚀 Ready for Week 4? GROUP BY and aggregate functions await! 🚀
+                    </div>
+                    <button onclick="this.parentElement.parentElement.remove()" style="
+                        background: #00b894;
+                        color: white;
+                        padding: 15px 40px;
+                        border: none;
+                        border-radius: 25px;
+                        font-size: 1.2em;
+                        font-weight: 600;
+                        cursor: pointer;
+                        margin-top: 20px;
+                    ">Stay Tuned for Next Learning Friday! 📅</button>
+                </div>
+            `;
+            
+            document.body.appendChild(celebrationDiv);
+            
+            // Create confetti
+            createMegaConfetti();
+        }
+        
+        function createMegaConfetti() {
+            const colors = ['#ff9900', '#00b894', '#ffffff', '#ffad33', '#00a085'];
+            const symbols = ['🎉', '🎊', '✨', '🏆', '🌟', '⭐', '🎯', '🚀'];
+            
+            for (let i = 0; i < 100; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+                    confetti.style.cssText = `
+                        position: fixed;
+                        top: -20px;
+                        left: ${Math.random() * 100}%;
+                        font-size: ${Math.random() * 30 + 20}px;
+                        color: ${colors[Math.floor(Math.random() * colors.length)]};
+                        pointer-events: none;
+                        z-index: 10002;
+                        animation: confettiFall ${Math.random() * 4 + 3}s linear forwards;
+                    `;
+                    
+                    document.body.appendChild(confetti);
+                    
+                    setTimeout(() => {
+                        if (document.body.contains(confetti)) {
+                            document.body.removeChild(confetti);
+                        }
+                    }, 7000);
+                }, i * 50);
             }
         }
 
-        // Add some interactive effects
-        document.addEventListener('DOMContentLoaded', function() {
-            // Animate sections on scroll
-            const sections = document.querySelectorAll('.section');
+        // AND/OR Demo Functions
+        function showDemo(type) {
+            const query = document.getElementById('currentQuery');
+            const rows = document.querySelectorAll('#resultTable tr[data-id]');
             
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.style.opacity = '1';
-                        entry.target.style.transform = 'translateY(0)';
-                    }
-                });
-            });
-
-            sections.forEach(section => {
-                observer.observe(section);
-            });
-        });
+            // Clear previous highlights
+            rows.forEach(row => row.classList.remove('highlight-row'));
+            
+            // Clear active buttons
+            document.querySelectorAll('.demo-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            switch(type) {
+                case 'and1': // price > 500 AND rating >= 4.7
+                    query.textContent = 'SELECT * FROM products WHERE price > 500 AND rating >= 4.7;';
+                    // iPhone (999, 4.8), MacBook (1999, 4.9), AirPods (179, 4.7) - NO, iPad (599, 4.6) - NO
+                    document.querySelector('[data-id="1"]').classList.add('highlight-row'); // iPhone
+                    document.querySelector('[data-id="2"]').classList.add('highlight-row'); // MacBook
+                    break;
+                    
+                case 'and2': // category = 'Phone' AND price < 900
+                    query.textContent = 'SELECT * FROM products WHERE category = \'Phone\' AND price < 900;';
+                    document.querySelector('[data-id="6"]').classList.add('highlight-row'); // Samsung Phone
+                    break;
+                    
+                case 'or1': // category = 'Phone' OR category = 'Tablet'
+                    query.textContent = 'SELECT * FROM products WHERE category = \'Phone\' OR category = \'Tablet\';';
+                    document.querySelector('[data-id="1"]').classList.add('highlight-row'); // iPhone
+                    document.querySelector('[data-id="4"]').classList.add('highlight-row'); // iPad
+                    document.querySelector('[data-id="6"]').classList.add('highlight-row'); // Samsung
+                    break;
+                    
+                case 'or2': // price > 1500 OR rating >= 4.8
+                    query.textContent = 'SELECT * FROM products WHERE price > 1500 OR rating >= 4.8;';
+                    document.querySelector('[data-id="1"]').classList.add('highlight-row'); // iPhone (4.8)
+                    document.querySelector('[data-id="2"]').classList.add('highlight-row'); // MacBook (1999, 4.9)
+                    break;
+                    
+                case 'reset':
+                    query.textContent = 'SELECT * FROM products;';
+                    rows.forEach(row => row.classList.add('highlight-row'));
+                    break;
+            }
+        }
+        
+        // ORDER BY Demo Functions
+        const originalData = [
+            ['iPhone 15', 999, 'Phone', 4.8],
+            ['MacBook Pro', 1999, 'Laptop', 4.9],
+            ['AirPods', 179, 'Audio', 4.7],
+            ['iPad', 599, 'Tablet', 4.6],
+            ['Dell Laptop', 899, 'Laptop', 4.2],
+            ['Samsung Phone', 799, 'Phone', 4.5]
+        ];
+        
+        function showSort(type) {
+            const query = document.getElementById('sortQuery');
+            const tbody = document.getElementById('sortTableBody');
+            let sortedData = [...originalData];
+            
+            // Clear active buttons
+            document.querySelectorAll('.demo-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            switch(type) {
+                case 'price-asc':
+                    query.textContent = 'SELECT * FROM products ORDER BY price ASC;';
+                    sortedData.sort((a, b) => a[1] - b[1]);
+                    break;
+                case 'price-desc':
+                    query.textContent = 'SELECT * FROM products ORDER BY price DESC;';
+                    sortedData.sort((a, b) => b[1] - a[1]);
+                    break;
+                case 'rating-desc':
+                    query.textContent = 'SELECT * FROM products ORDER BY rating DESC;';
+                    sortedData.sort((a, b) => b[3] - a[3]);
+                    break;
+                case 'name-asc':
+                    query.textContent = 'SELECT * FROM products ORDER BY name ASC;';
+                    sortedData.sort((a, b) => a[0].localeCompare(b[0]));
+                    break;
+                case 'original':
+                    query.textContent = 'SELECT * FROM products;';
+                    break;
+            }
+            
+            // Update table
+            tbody.innerHTML = sortedData.map(row => 
+                `<tr><td>${row[0]}</td><td>${row[1]}</td><td>${row[2]}</td><td>${row[3]}</td></tr>`
+            ).join('');
+        }
+        
+        // LIMIT Demo Functions
+        function showLimit(type) {
+            const query = document.getElementById('limitQuery');
+            const tbody = document.getElementById('limitTableBody');
+            let data = [...originalData];
+            
+            // Clear active buttons
+            document.querySelectorAll('.demo-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            switch(type) {
+                case 'top3-price':
+                    query.textContent = 'SELECT * FROM products ORDER BY price DESC LIMIT 3;';
+                    data.sort((a, b) => b[1] - a[1]);
+                    data = data.slice(0, 3);
+                    break;
+                case 'top2-rating':
+                    query.textContent = 'SELECT * FROM products ORDER BY rating DESC LIMIT 2;';
+                    data.sort((a, b) => b[3] - a[3]);
+                    data = data.slice(0, 2);
+                    break;
+                case 'limit5':
+                    query.textContent = 'SELECT * FROM products LIMIT 5;';
+                    data = data.slice(0, 5);
+                    break;
+                case 'all':
+                    query.textContent = 'SELECT * FROM products;';
+                    break;
+            }
+            
+            // Update table
+            tbody.innerHTML = data.map(row => 
+                `<tr><td>${row[0]}</td><td>${row[1]}</td><td>${row[2]}</td><td>${row[3]}</td></tr>`
+            ).join('');
+        }
     </script>
 </body>
 </html>
